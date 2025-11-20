@@ -454,6 +454,14 @@ if __name__ == "__main__":
 
         print("Dependencies \U00002705")  # unicode for GREEN CHECK
 
+    # Set S3-specific singleton values before setup_singleton if they exist
+    command = args.command
+    if command == "movetos3" or command == "getfroms3":
+        if not args.endpoint_url is None:
+            singleton.AWS_S3_ENDPOINT_URL = args.endpoint_url
+        if not args.profile is None:
+            singleton.AWS_S3_PROFILE = args.profile
+
     setup_singleton(args)
 
     # Placing these imports earlier creates a circular dependency with the installer
@@ -471,7 +479,6 @@ if __name__ == "__main__":
         fanout
     )
 
-    command = args.command
     if command == "list":
         list(snapshot_id=args.snapshot)
 
@@ -494,17 +501,9 @@ if __name__ == "__main__":
         sync(snapshot_id_one=args.snapshot_one, snapshot_id_two=args.snapshot_two, destination_snapshot=args.destination_snapshot)
 
     elif command == "movetos3":
-        if not args.endpoint_url is None:
-            singleton.AWS_S3_ENDPOINT_URL = args.endpoint_url
-        if not args.endpoint_url is None:
-            singleton.AWS_S3_PROFILE = args.profile
         movetos3(snapshot_id=args.snapshot)
 
     elif command == "getfroms3":
-        if not args.endpoint_url is None:
-            singleton.AWS_S3_ENDPOINT_URL = args.endpoint_url
-        if not args.endpoint_url is None:
-            singleton.AWS_S3_PROFILE = args.profile
         getfroms3(snapshot_prefix=args.snapshot_prefix)
 
     elif command == "multiclone":
